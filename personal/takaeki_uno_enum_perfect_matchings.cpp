@@ -35,9 +35,13 @@ class Graph
     // A recursive function to print DFS starting from v
     void DFSUtil(int v, bool visited[], vector<int> &conected_component);
 
+    bool isCyclicUtil(int v, bool visited[], bool *rs); // used by isCyclic()
+
 public:
     Graph(int V);
     void addEdge(int v, int w);
+
+    pair<int, int> getEdge();
 
     // The main function that finds and prints strongly connected
     // components
@@ -45,6 +49,8 @@ public:
 
     // Print graph edges
     void printGraph();
+
+    bool isReachable(int s, int d);
 
     // Function that returns reverse (or transpose) of this graph
     Graph getTranspose();
@@ -74,6 +80,57 @@ void Graph::DFSUtil(int v, bool visited[], vector<int> &connected_component)
             DFSUtil(*i, visited, connected_component);
 }
 
+// A BFS based function to check whether d is reachable from s.
+bool Graph::isReachable(int s, int d)
+{
+    // Base case
+    if (s == d)
+        return true;
+
+    // Mark all the vertices as not visited
+    bool *visited = new bool[V];
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
+
+    // Create a queue for BFS
+    list<int> queue;
+
+    // Mark the current node as visited and enqueue it
+    visited[s] = true;
+    queue.push_back(s);
+
+    // it will be used to get all adjacent vertices of a vertex
+    list<int>::iterator i;
+
+    while (!queue.empty())
+    {
+        // Dequeue a vertex from queue and print it
+        s = queue.front();
+        queue.pop_front();
+
+        // Get all adjacent vertices of the dequeued vertex s
+        // If a adjacent has not been visited, then mark it visited
+        // and enqueue it
+        for (i = adj[s].begin(); i != adj[s].end(); ++i)
+        {
+            // If this adjacent node is the destination node, then
+            // return true
+            if (*i == d)
+                return true;
+
+            // Else, continue to do BFS
+            if (!visited[*i])
+            {
+                visited[*i] = true;
+                queue.push_back(*i);
+            }
+        }
+    }
+
+    // If BFS is complete without visiting d
+    return false;
+}
+
 Graph Graph::getTranspose()
 {
     Graph g(V);
@@ -93,6 +150,23 @@ void Graph::addEdge(int v, int w)
 {
     adj[v].push_back(w); // Add w to v’s list.
     edge_count++;
+}
+
+pair<int, int> Graph::getEdge()
+{
+    if (edge_count > 0)
+    {
+        int i = 0;
+        while (adj[i].size() == 0)
+        {
+            i++;
+        }
+        return pair<int, int>(i, adj[i].front());
+    }
+    else
+    {
+        return pair<int, int>(-1, -1);
+    }
 }
 
 void Graph::fillOrder(int v, bool visited[], stack<int> &Stack)
@@ -257,6 +331,24 @@ vector<bool> corners_with_face(char face)
     return corners_have_face;
 }
 
+void enum_perfect_matching_iter(Graph &graph, vector<int> matching)
+{
+    // Step 1: If G has no edge, stop.
+    if (graph.edge_count == 0)
+    {
+        return;
+    }
+    // Step 2: Choose an edge e
+    pair<int, int> edge = graph.getEdge();
+    // Step 3: Find a cycle containing e by a depth-first search algorithm.
+    bool is_cycle = graph.isReachable(edge.second, edge.first);
+
+    // auto cycle = ;
+    // Step 4: Find a perfect matching M' by exchanging edges along the cycle.Output M'
+    // auto matching_prime = matching.replace(rotate(cycle));
+    // TODO: output matching_prime
+}
+
 int enum_perfect_matchings(bool bpGraph[M][N])
 {
     int matchR[N];
@@ -293,9 +385,11 @@ int enum_perfect_matchings(bool bpGraph[M][N])
     }
 
     vector<int> matchRinv(8, -1);
+    vector<int> matchRvec;
     for (size_t i = 0; i < matchRinv.size(); i++)
     {
         matchRinv[matchR[i]] = i;
+        matchRvec.push_back(matchR[i]);
     }
 
     // STEP 2: Trim unnecessary edges from G by a strongly connected component
@@ -369,6 +463,8 @@ int enum_perfect_matchings(bool bpGraph[M][N])
 
     cout << "graph adjacency list: " << endl;
     g_trimmed.printGraph();
+
+    enum_perfect_matching_iter(g_trimmed, matchRvec);
 
     return 0;
 }
