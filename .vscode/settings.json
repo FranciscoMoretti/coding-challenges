@@ -62,4 +62,7 @@
         "typeinfo": "cpp",
         "valarray": "cpp"
     },
+    "cph.general.companionProblemsFileLocation": "codeforces/problemset",
+    "cph.general.defaultLanguage": "python",
+    "cph.general.defaultLanguageTemplateFileLocation": "C:/Users/Francisco/Code/coding-challenges/PyRival/templates/template_py3.py"
 }
