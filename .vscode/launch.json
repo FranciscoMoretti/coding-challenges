@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      // "args": ["cat", "<<<", "3\n3 4\n2 12\n105 564"]
+      // "args": ["cat", "<<", "END_OF_DOC\n3\n3 4\n2 12\n105 564\nEND_OF_DOC\n"]
+    },
+    {
       "name": "gcc - Build and debug active file",
       "type": "cppdbg",
       "request": "launch",
@@ -30,7 +39,10 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${fileDirname}/${fileBasenameNoExtension}",
-      "args": ["<", "${fileDirname}/input.txt"],
+      "args": [
+        "<",
+        "${fileDirname}/input.txt"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
